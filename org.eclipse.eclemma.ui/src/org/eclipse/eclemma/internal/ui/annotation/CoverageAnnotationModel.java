@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.eclemma.core.CoverageTools;
+import org.eclipse.eclemma.core.analysis.IJavaCoverageListener;
+import org.eclipse.eclemma.internal.ui.EclEmmaUIPlugin;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ISourceReference;
 import org.eclipse.jdt.core.JavaModelException;
@@ -38,10 +41,6 @@ import org.jacoco.core.analysis.ICounter;
 import org.jacoco.core.analysis.ICoverageNode;
 import org.jacoco.core.analysis.ILine;
 import org.jacoco.core.analysis.ISourceNode;
-
-import org.eclipse.eclemma.core.CoverageTools;
-import org.eclipse.eclemma.core.analysis.IJavaCoverageListener;
-import org.eclipse.eclemma.internal.ui.EclEmmaUIPlugin;
 
 /**
  * IAnnotationModel implementation for efficient coverage highlighting.
@@ -152,11 +151,14 @@ public final class CoverageAnnotationModel implements IAnnotationModel {
     if (editor.isDirty()) {
       return null;
     }
-    final IEditorInput input = editor.getEditorInput();
-    if (input == null) {
-      return null;
+    Object element = editor.getAdapter(IJavaElement.class);
+    if (element == null) {
+      final IEditorInput input = editor.getEditorInput();
+      if (input == null) {
+        return null;
+      }
+      element = input.getAdapter(IJavaElement.class);
     }
-    final Object element = input.getAdapter(IJavaElement.class);
     if (!hasSource((IJavaElement) element)) {
       return null;
     }
